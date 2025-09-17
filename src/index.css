@@ -2,39 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* WaterSafe Design System - Environmental Theme with Blue/Green Palette
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base colors - Clean environmental palette */
+    --background: 210 20% 98%;
+    --foreground: 200 20% 10%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card styling with subtle environmental tint */
+    --card: 210 25% 97%;
+    --card-foreground: 200 20% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 210 25% 97%;
+    --popover-foreground: 200 20% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
+    /* Primary - Ocean blue */
+    --primary: 200 85% 45%;
     --primary-foreground: 210 40% 98%;
+    --primary-glow: 200 85% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Fresh green */
+    --secondary: 150 60% 45%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted tones */
+    --muted: 210 25% 92%;
+    --muted-foreground: 200 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Complementary environmental green */
+    --accent: 160 55% 50%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 84.2% 60.2%;
+    /* Status colors for pollution levels */
+    --safe: 120 65% 45%;
+    --safe-foreground: 210 40% 98%;
+    --moderate: 45 90% 55%;
+    --moderate-foreground: 200 20% 15%;
+    --unsafe: 0 75% 55%;
+    --unsafe-foreground: 210 40% 98%;
+
+    --destructive: 0 75% 55%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 210 25% 85%;
+    --input: 210 25% 90%;
+    --ring: 200 85% 45%;
+
+    /* Environmental gradients */
+    --gradient-ocean: linear-gradient(135deg, hsl(200 85% 45%), hsl(180 70% 50%));
+    --gradient-earth: linear-gradient(135deg, hsl(150 60% 45%), hsl(120 65% 45%));
+    --gradient-sky: linear-gradient(180deg, hsl(210 100% 95%), hsl(200 60% 85%));
+    --gradient-hero: linear-gradient(135deg, hsl(200 85% 45%), hsl(160 55% 50%));
+
+    /* Shadows with environmental tint */
+    --shadow-soft: 0 4px 20px hsl(200 20% 60% / 0.1);
+    --shadow-medium: 0 8px 30px hsl(200 30% 40% / 0.15);
+    --shadow-strong: 0 20px 40px hsl(200 40% 30% / 0.2);
+
+    /* Animation and transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
@@ -56,33 +86,52 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode - Deep ocean theme */
+    --background: 200 25% 8%;
+    --foreground: 210 40% 92%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 200 20% 10%;
+    --card-foreground: 210 40% 92%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 200 20% 10%;
+    --popover-foreground: 210 40% 92%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 200 85% 55%;
+    --primary-foreground: 200 25% 8%;
+    --primary-glow: 200 85% 75%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 150 60% 55%;
+    --secondary-foreground: 200 25% 8%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 200 15% 15%;
+    --muted-foreground: 210 20% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 160 55% 60%;
+    --accent-foreground: 200 25% 8%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --safe: 120 65% 55%;
+    --safe-foreground: 200 25% 8%;
+    --moderate: 45 90% 65%;
+    --moderate-foreground: 200 25% 8%;
+    --unsafe: 0 75% 65%;
+    --unsafe-foreground: 200 25% 8%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --destructive: 0 75% 65%;
+    --destructive-foreground: 200 25% 8%;
+
+    --border: 200 15% 20%;
+    --input: 200 15% 18%;
+    --ring: 200 85% 55%;
+
+    /* Dark gradients */
+    --gradient-ocean: linear-gradient(135deg, hsl(200 85% 35%), hsl(180 70% 40%));
+    --gradient-earth: linear-gradient(135deg, hsl(150 60% 35%), hsl(120 65% 35%));
+    --gradient-sky: linear-gradient(180deg, hsl(200 30% 12%), hsl(200 20% 18%));
+    --gradient-hero: linear-gradient(135deg, hsl(200 85% 35%), hsl(160 55% 40%));
+
+    --shadow-soft: 0 4px 20px hsl(200 20% 5% / 0.4);
+    --shadow-medium: 0 8px 30px hsl(200 30% 5% / 0.5);
+    --shadow-strong: 0 20px 40px hsl(200 40% 5% / 0.6);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
