@@ -18,6 +18,7 @@ import {
   Clock
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { createReport } from "@/lib/api";
 
 const CitizenReport = () => {
   const [formData, setFormData] = useState({
@@ -34,6 +35,7 @@ const CitizenReport = () => {
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [createdReportCode, setCreatedReportCode] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -49,16 +51,33 @@ const CitizenReport = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const payload = {
+        name: formData.name || undefined,
+        email: formData.email || undefined,
+        location: formData.location,
+        coordinates: formData.coordinates || undefined,
+        issueType: formData.issueType,
+        priority: formData.priority,
+        description: formData.description,
+        anonymous: formData.anonymous,
+        contactForUpdates: formData.contactForUpdates,
+      };
+  const created = await createReport(payload);
+  setCreatedReportCode(created.reportCode);
       setSubmitted(true);
       toast({
         title: "Report Submitted Successfully",
-        description: "Thank you for helping keep our water safe. Your report ID is #WS-2024-001",
+        description: "Thank you for helping keep our water safe.",
       });
-    }, 2000);
+    } catch (err) {
+      toast({
+        title: "Submission failed",
+        description: "Please try again in a moment.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const generateCoordinates = () => {
@@ -86,7 +105,7 @@ const CitizenReport = () => {
                 <div className="text-sm space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Report ID:</span>
-                    <span className="font-mono text-foreground">#WS-2024-001</span>
+                    <span className="font-mono text-foreground">{createdReportCode ?? '—'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Status:</span>

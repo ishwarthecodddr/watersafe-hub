@@ -1,26 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { 
   Map, 
   Filter, 
   BarChart3, 
   MapPin, 
   AlertTriangle, 
-  CheckCircle, 
   TrendingUp,
   Calendar,
   Layers
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { listReports, ReportDTO } from "@/lib/api";
+import MapView from "@/components/MapView";
 
 const Dashboard = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [selectedMetal, setSelectedMetal] = useState("all");
   const [selectedDate, setSelectedDate] = useState("last-month");
+
+  const [reports, setReports] = useState<ReportDTO[] | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    listReports()
+      .then((data) => { if (mounted) setReports(data); })
+      .catch(() => setReports([]));
+    return () => { mounted = false; };
+  }, []);
 
   const mockData = {
     summary: {
@@ -28,7 +38,7 @@ const Dashboard = () => {
       safeSites: 32,
       moderateSites: 8,
       unsafeSites: 5,
-      citizenReports: 12
+      citizenReports: (reports ?? []).length
     },
     recentSites: [
       { id: 1, name: "River Site A", lat: 25.2, lng: 89.3, status: "safe", hpi: 15.2, lastUpdated: "2 hours ago" },
@@ -36,11 +46,13 @@ const Dashboard = () => {
       { id: 3, name: "Well Site C", lat: 25.1, lng: 89.5, status: "unsafe", hpi: 125.6, lastUpdated: "1 day ago" },
       { id: 4, name: "Stream Site D", lat: 25.3, lng: 89.2, status: "safe", hpi: 8.9, lastUpdated: "3 hours ago" },
     ],
-    citizenReports: [
-      { id: 1, location: "Downtown Area", description: "Unusual water discoloration", status: "pending", priority: "high" },
-      { id: 2, location: "Industrial District", description: "Strong chemical odor", status: "investigating", priority: "critical" },
-      { id: 3, location: "Residential Zone", description: "Metallic taste in water", status: "resolved", priority: "medium" },
-    ]
+    citizenReports: (reports ?? []).map((r) => ({
+      id: r.id,
+      location: r.location,
+      description: r.description,
+      status: r.status.toLowerCase(),
+      priority: r.priority.toLowerCase(),
+    }))
   };
 
   const getStatusColor = (status: string) => {
@@ -184,7 +196,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Map Placeholder */}
+            {/* Map */}
             <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -193,21 +205,21 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-96 bg-gradient-earth rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent)] opacity-50"></div>
-                  <div className="text-center z-10">
-                    <Map className="h-16 w-16 text-white/80 mx-auto mb-4" />
-                    <div className="text-white/90 space-y-2">
-                      <p className="text-lg font-medium">Interactive Map Loading...</p>
-                      <p className="text-sm">Heatmap • Markers • Citizen Reports</p>
+                <div className="h-96 rounded-lg overflow-hidden">
+                  {reports && reports.length > 0 ? (
+                    <MapView reports={reports} />
+                  ) : (
+                    <div className="h-96 bg-gradient-earth rounded-lg flex items-center justify-center relative overflow-hidden">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent)] opacity-50"></div>
+                      <div className="text-center z-10">
+                        <Map className="h-16 w-16 text-white/80 mx-auto mb-4" />
+                        <div className="text-white/90 space-y-2">
+                          <p className="text-lg font-medium">Interactive Map Loading...</p>
+                          <p className="text-sm">Heatmap • Markers • Citizen Reports</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  
-                  {/* Mock map pins */}
-                  <div className="absolute top-20 left-20 w-3 h-3 bg-safe rounded-full animate-pulse shadow-strong"></div>
-                  <div className="absolute top-32 right-24 w-3 h-3 bg-moderate rounded-full animate-pulse shadow-strong"></div>
-                  <div className="absolute bottom-24 left-32 w-3 h-3 bg-unsafe rounded-full animate-pulse shadow-strong"></div>
-                  <div className="absolute bottom-20 right-20 w-3 h-3 bg-primary rounded-full animate-pulse shadow-strong"></div>
+                  )}
                 </div>
                 
                 <div className="mt-4 flex items-center justify-between">

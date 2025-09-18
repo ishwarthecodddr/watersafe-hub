@@ -41,7 +41,7 @@ const UploadData = () => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFile(e.dataTransfer.files[0]);
     }
@@ -50,7 +50,7 @@ const UploadData = () => {
   const handleFile = (file: File) => {
     setUploadedFile(file);
     setIsProcessing(true);
-    
+
     // Simulate processing
     setTimeout(() => {
       setIsProcessing(false);
@@ -108,8 +108,8 @@ const UploadData = () => {
               <div
                 className={cn(
                   "border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300",
-                  dragActive 
-                    ? "border-primary bg-primary/5 shadow-medium" 
+                  dragActive
+                    ? "border-primary bg-primary/5 shadow-medium"
                     : "border-border hover:border-primary/50 hover:bg-muted/50"
                 )}
                 onDragEnter={handleDrag}
@@ -134,7 +134,10 @@ const UploadData = () => {
                     onChange={handleFileChange}
                     className="hidden"
                   />
-                  <Button className="mt-4 bg-gradient-ocean hover:shadow-medium transition-all duration-300">
+                  <Button
+                    className="mt-4 bg-gradient-ocean hover:shadow-medium transition-all duration-300"
+                    onClick={() => document.getElementById('file-upload')?.click()}
+                  >
                     Choose File
                   </Button>
                 </Label>
@@ -236,7 +239,7 @@ const UploadData = () => {
                               <span className="capitalize">{site.status}</span>
                             </Badge>
                           </div>
-                          
+
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                             <div className="bg-muted/50 rounded p-2 text-center">
                               <div className="font-medium text-foreground">{site.hpi}</div>
@@ -258,9 +261,9 @@ const UploadData = () => {
                         </div>
                       ))}
                     </div>
-                    
+
                     <div className="mt-6 flex justify-end">
-                      <Button className="bg-gradient-ocean hover:shadow-medium transition-all duration-300">
+                      <Button className="bg-gradient-ocean hover:shadow-medium transition-all duration-300" onClick={() => window.location.href = '/dashboard'}>
                         View on Dashboard
                       </Button>
                     </div>
@@ -289,12 +292,12 @@ const UploadData = () => {
                     <span className="text-sm"><strong>Unsafe:</strong> HPI &gt; 100, not suitable for use</span>
                   </div>
                 </div>
-                
+
                 <div className="pt-3 border-t border-border">
                   <p className="text-sm text-muted-foreground">
-                    <strong>HPI:</strong> Heavy Metal Pollution Index<br/>
-                    <strong>MPI:</strong> Metal Pollution Index<br/>
-                    <strong>PLI:</strong> Pollution Load Index<br/>
+                    <strong>HPI:</strong> Heavy Metal Pollution Index<br />
+                    <strong>MPI:</strong> Metal Pollution Index<br />
+                    <strong>PLI:</strong> Pollution Load Index<br />
                     <strong>HEI:</strong> Heavy Metal Evaluation Index
                   </p>
                 </div>

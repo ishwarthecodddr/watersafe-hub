@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,66 +21,22 @@ import {
   TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { listReports, ReportDTO } from "@/lib/api";
 
 const PublicAccountability = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
 
-  const mockReports = [
-    {
-      id: "WS-2024-001",
-      location: "Downtown Lake",
-      coordinates: "25.2°N, 89.3°E",
-      description: "Unusual water discoloration observed",
-      status: "resolved",
-      priority: "medium",
-      submittedBy: "Anonymous",
-      submittedDate: "2024-01-15",
-      resolvedDate: "2024-01-18",
-      officialResponse: "Water testing conducted. Temporary algae bloom, resolved naturally.",
-      actionTaken: "Increased monitoring frequency for 30 days"
-    },
-    {
-      id: "WS-2024-002", 
-      location: "Industrial District River",
-      coordinates: "25.4°N, 89.1°E",
-      description: "Strong chemical odor and oil sheen on water surface",
-      status: "investigating",
-      priority: "critical",
-      submittedBy: "John Doe",
-      submittedDate: "2024-01-20",
-      resolvedDate: null,
-      officialResponse: "Investigation ongoing. Industrial facility inspections scheduled.",
-      actionTaken: "Water access restricted, source investigation in progress"
-    },
-    {
-      id: "WS-2024-003",
-      location: "Residential Well Area",
-      coordinates: "25.1°N, 89.5°E", 
-      description: "Metallic taste in drinking water",
-      status: "pending",
-      priority: "high",
-      submittedBy: "Jane Smith",
-      submittedDate: "2024-01-22",
-      resolvedDate: null,
-      officialResponse: "Report received and logged for review.",
-      actionTaken: "Pending initial assessment"
-    },
-    {
-      id: "WS-2024-004",
-      location: "City Park Pond",
-      coordinates: "25.3°N, 89.2°E",
-      description: "Dead fish found floating in pond",
-      status: "resolved",
-      priority: "high", 
-      submittedBy: "Anonymous",
-      submittedDate: "2024-01-10",
-      resolvedDate: "2024-01-14",
-      officialResponse: "Oxygen depletion due to organic matter. Aeration system installed.",
-      actionTaken: "Emergency aeration, habitat restoration"
-    }
-  ];
+  const [reports, setReports] = useState<ReportDTO[] | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    listReports()
+      .then((data) => { if (mounted) setReports(data); })
+      .catch(() => { setReports([]); });
+    return () => { mounted = false; };
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -110,20 +66,22 @@ const PublicAccountability = () => {
     }
   };
 
-  const filteredReports = mockReports.filter(report => {
+  const filteredReports = (reports ?? []).filter((report) => {
+    const statusText = report.status.toLowerCase();
+    const priorityText = report.priority.toLowerCase();
     const matchesSearch = report.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || report.status === statusFilter;
-    const matchesPriority = priorityFilter === "all" || report.priority === priorityFilter;
+      report.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.reportCode.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || statusText === statusFilter;
+    const matchesPriority = priorityFilter === 'all' || priorityText === priorityFilter;
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
   const stats = {
-    totalReports: mockReports.length,
-    resolved: mockReports.filter(r => r.status === "resolved").length,
-    investigating: mockReports.filter(r => r.status === "investigating").length,
-    pending: mockReports.filter(r => r.status === "pending").length,
+    totalReports: reports?.length ?? 0,
+    resolved: (reports ?? []).filter(r => r.status === 'RESOLVED').length,
+    investigating: (reports ?? []).filter(r => r.status === 'INVESTIGATING').length,
+    pending: (reports ?? []).filter(r => r.status === 'PENDING').length,
     avgResolutionTime: "3.2 days"
   };
 
@@ -269,22 +227,22 @@ const PublicAccountability = () => {
                         <div className="flex items-start justify-between">
                           <div>
                             <h3 className="font-semibold text-foreground flex items-center space-x-2">
-                              <span>Report {report.id}</span>
+                              <span>Report {report.reportCode}</span>
                             </h3>
                             <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
                               <MapPin className="h-3 w-3" />
                               <span>{report.location}</span>
                               <span>•</span>
-                              <span>{report.coordinates}</span>
+                              <span>{report.coordinates ?? ""}</span>
                             </div>
                           </div>
                           <div className="flex space-x-2">
-                            <Badge className={cn("flex items-center space-x-1", getStatusColor(report.status))}>
-                              {getStatusIcon(report.status)}
-                              <span className="capitalize">{report.status}</span>
+                            <Badge className={cn("flex items-center space-x-1", getStatusColor(report.status.toLowerCase()))}>
+                              {getStatusIcon(report.status.toLowerCase())}
+                              <span className="capitalize">{report.status.toLowerCase()}</span>
                             </Badge>
-                            <Badge className={cn("capitalize", getPriorityColor(report.priority))}>
-                              {report.priority}
+                            <Badge className={cn("capitalize", getPriorityColor(report.priority.toLowerCase()))}>
+                              {report.priority.toLowerCase()}
                             </Badge>
                           </div>
                         </div>
@@ -294,16 +252,16 @@ const PublicAccountability = () => {
                         <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                           <div className="flex items-center space-x-1">
                             <Users className="h-3 w-3" />
-                            <span>By: {report.submittedBy}</span>
+                            <span>By: {report.submittedByName ?? 'Anonymous'}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Calendar className="h-3 w-3" />
-                            <span>Submitted: {report.submittedDate}</span>
+                            <span>Submitted: {new Date(report.submittedAt).toLocaleDateString()}</span>
                           </div>
-                          {report.resolvedDate && (
+                          {report.resolvedAt && (
                             <div className="flex items-center space-x-1">
                               <CheckCircle className="h-3 w-3" />
-                              <span>Resolved: {report.resolvedDate}</span>
+                              <span>Resolved: {new Date(report.resolvedAt).toLocaleDateString()}</span>
                             </div>
                           )}
                         </div>
@@ -313,12 +271,12 @@ const PublicAccountability = () => {
                       <div className="lg:col-span-2 space-y-3">
                         <div>
                           <h4 className="font-medium text-foreground text-sm mb-2">Official Response:</h4>
-                          <p className="text-sm text-muted-foreground">{report.officialResponse}</p>
+                          <p className="text-sm text-muted-foreground">{report.officialResponse ?? '—'}</p>
                         </div>
                         
                         <div>
                           <h4 className="font-medium text-foreground text-sm mb-2">Action Taken:</h4>
-                          <p className="text-sm text-muted-foreground">{report.actionTaken}</p>
+                          <p className="text-sm text-muted-foreground">{report.actionTaken ?? '—'}</p>
                         </div>
                         
                         <div className="flex justify-end">
