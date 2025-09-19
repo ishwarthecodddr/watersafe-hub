@@ -49,7 +49,6 @@ npm run dev:all
 ```
 - Frontend runs at http://localhost:8080
 - Backend runs at http://localhost:5174 (health: /api/health)
-- Keep Docker/DB running while using the app.
 
 If you prefer separate terminals:
 ```powershell
@@ -106,19 +105,9 @@ npm --prefix server run prisma:seed
 - For production, use a managed Postgres and set `DATABASE_URL` accordingly.
 # Welcome to your Lovable project
 
-## Project info
-
-**URL**: https://lovable.dev/projects/a67222cf-10d9-477d-81d1-9325dfd7e95b
-
 ## How can I edit this code?
 
 There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/a67222cf-10d9-477d-81d1-9325dfd7e95b) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
@@ -165,15 +154,3 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/a67222cf-10d9-477d-81d1-9325dfd7e95b) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
