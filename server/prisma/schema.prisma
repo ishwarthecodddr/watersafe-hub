@@ -1,50 +1,50 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id        String   @id @default(cuid())
-    name      String?
-    email     String?  @unique
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    reports   Report[]
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reports   Report[]
 }
 
 model Report {
-    id                String         @id @default(cuid())
-    reportCode        String         @unique
-    location          String
-    coordinates       String?
-    description       String
-    status            ReportStatus   @default(PENDING)
-    priority          ReportPriority
-    submittedByName   String?
-    submittedByEmail  String?
-    anonymous         Boolean        @default(false)
-    contactForUpdates Boolean        @default(true)
-    officialResponse  String?
-    actionTaken       String?
-    submittedAt       DateTime       @default(now())
-    resolvedAt        DateTime?
-    userId            String?
-    user              User?          @relation(fields: [userId], references: [id])
+  id                String         @id @default(cuid())
+  reportCode        String         @unique
+  location          String
+  coordinates       String?
+  description       String
+  status            ReportStatus   @default(PENDING)
+  priority          ReportPriority
+  submittedByName   String?
+  submittedByEmail  String?
+  anonymous         Boolean        @default(false)
+  contactForUpdates Boolean        @default(true)
+  officialResponse  String?
+  actionTaken       String?
+  submittedAt       DateTime       @default(now())
+  resolvedAt        DateTime?
+  userId            String?
+  user              User?          @relation(fields: [userId], references: [id])
 }
 
 enum ReportStatus {
-    PENDING
-    INVESTIGATING
-    RESOLVED
+  PENDING
+  INVESTIGATING
+  RESOLVED
 }
 
 enum ReportPriority {
-    LOW
-    MEDIUM
-    HIGH
-    CRITICAL
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }

@@ -17,6 +17,12 @@ export type ReportDTO = {
 // Frontend talks to our Express server. Configure via VITE_API_BASE.
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5174/api';
 
+if (!import.meta.env.VITE_API_BASE) {
+  // Lightweight runtime guard so devs notice misconfiguration earlier.
+  // eslint-disable-next-line no-console
+  console.warn('[api] VITE_API_BASE not set; using fallback', API_BASE);
+}
+
 export async function listReports(): Promise<ReportDTO[]> {
   const res = await fetch(`${API_BASE}/reports`);
   if (!res.ok) throw new Error('Failed to load reports');

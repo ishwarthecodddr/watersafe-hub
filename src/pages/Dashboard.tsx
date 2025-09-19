@@ -16,13 +16,13 @@ import {
 import { cn } from "@/lib/utils";
 import { listReports, ReportDTO } from "@/lib/api";
 import MapView from "@/components/MapView";
-
 const Dashboard = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [selectedMetal, setSelectedMetal] = useState("all");
   const [selectedDate, setSelectedDate] = useState("last-month");
 
   const [reports, setReports] = useState<ReportDTO[] | null>(null);
+  const [showHeat, setShowHeat] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -207,7 +207,7 @@ const Dashboard = () => {
               <CardContent>
                 <div className="h-96 rounded-lg overflow-hidden">
                   {reports && reports.length > 0 ? (
-                    <MapView reports={reports} />
+                    <MapView reports={reports} showHeat={showHeat} />
                   ) : (
                     <div className="h-96 bg-gradient-earth rounded-lg flex items-center justify-center relative overflow-hidden">
                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent)] opacity-50"></div>
@@ -242,9 +242,9 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                  <Button variant={showHeat ? "default" : "outline"} size="sm" className="flex items-center space-x-2" onClick={() => setShowHeat(h => !h)}>
                     <Layers className="h-4 w-4" />
-                    <span>Toggle Heatmap</span>
+                    <span>{showHeat ? 'Hide Heatmap' : 'Show Heatmap'}</span>
                   </Button>
                 </div>
               </CardContent>

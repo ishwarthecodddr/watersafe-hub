@@ -17,7 +17,7 @@ const createReportSchema = z.object({
 });
 
 // List all reports (newest first)
-reportsRouter.get("/", async (_req: Request, res: Response) => {
+reportsRouter.get("/", async (req: Request, res: Response) => {
   const reports = await prisma.report.findMany({
     orderBy: { submittedAt: "desc" },
   });
@@ -38,6 +38,24 @@ reportsRouter.post("/", async (req: Request, res: Response) => {
   if (!parse.success)
     return res.status(400).json({ error: parse.error.flatten() });
   const data = parse.data;
+  const normalizeCoords = (raw?: string | null): string | null => {
+    if (!raw) return null;
+    const cleaned = raw.replace(/°/g, '').trim();
+    const parts = cleaned.split(',').map(p => p.trim());
+    if (parts.length !== 2) return raw; // keep original if unexpected format
+    const parsePart = (p: string): number | null => {
+      const m = p.match(/^(-?\d+(?:\.\d+)?)([NnSsEeWw])?$/);
+      if (!m) return null;
+      let v = parseFloat(m[1]);
+      const d = m[2]?.toUpperCase();
+      if (d === 'S' || d === 'W') v = -v;
+      return isNaN(v) ? null : v;
+    };
+    const lat = parsePart(parts[0]);
+    const lng = parsePart(parts[1]);
+    if (lat == null || lng == null) return raw;
+    return `${lat},${lng}`;
+  };
   const code = `WS-${new Date().getFullYear()}-${Math.random()
     .toString(36)
     .slice(2, 6)
@@ -52,7 +70,7 @@ reportsRouter.post("/", async (req: Request, res: Response) => {
     data: {
       reportCode: code,
       location: data.location,
-      coordinates: data.coordinates ?? null,
+  coordinates: normalizeCoords(data.coordinates) ?? null,
       description: `[${data.issueType}] ${data.description}`,
       status: "PENDING",
       priority: priorityMap[data.priority],

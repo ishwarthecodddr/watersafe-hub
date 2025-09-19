@@ -10,6 +10,11 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
+if (!process.env.DATABASE_URL) {
+  // eslint-disable-next-line no-console
+  console.error('[server] Warning: DATABASE_URL is not set. Prisma will fail to initialize.');
+}
+
 app.get('/api/health', (_req: express.Request, res: express.Response) => {
   res.json({ ok: true, service: 'watersafe-hub', timestamp: new Date().toISOString() });
 });
@@ -17,7 +22,7 @@ app.get('/api/health', (_req: express.Request, res: express.Response) => {
 app.use('/api/reports', reportsRouter);
 app.use('/api/users', usersRouter);
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 5174;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 app.listen(PORT, () => {
   console.log(`[server] listening on http://localhost:${PORT}`);
 });
